@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>lrndesign-imagemap demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../lrndesign-imagemap.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        .hotspot > * {
+          fill: rgba(0,0,0,0.5);
+        }
+        .hotspot:active,
+        .hotspot:focus,
+        .hotspot:hover {
+          outline: none;
+        }
+        .hotspot:active > *,
+        .hotspot:focus > *,
+        .hotspot:hover > *,
+        .hotspot.selected > * {
+          fill:transparent;
+          cursor: pointer;
+        }
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic lrndesign-imagemap demo</h3>
+      <demo-snippet>
+        <template>
+          <lrndesign-imagemap src="images/fastfood.svg">
+            <h1 id="label">Junk Food Calories</h1>
+            <div id="desc">
+              A fast food meal with a double cheeseburger, large fries, and a 12-ounce cola.
+            </div>
+            <div id="screen-only">Click on the hotspots to learn more.</div>
+            <div hotspot="burger">
+              <h2 id="label">Double Cheeseburger</h2>
+              <div id="desc">The double cheeseburger is 459 calories.</div>
+            </div>
+            <div hotspot="fries">
+              <h2 id="label">Large French Fries</h2>
+              <div id="desc">The large order of french fries is 480 calories.</div>
+            </div>
+            <div hotspot="cola">
+              <h2 id="label">12-Ounce Cola</h2>
+              <div id="desc">The 12-ounce is 138 calories.</div>
+            </div>
+          </lrndesign-imagemap>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

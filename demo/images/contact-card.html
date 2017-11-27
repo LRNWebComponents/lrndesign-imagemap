@@ -1,0 +1,122 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/communication-icons.html">
+
+<!--
+`contact-card`
+a contact card
+
+@demo demo/index.html
+-->
+
+<dom-module id="contact-card">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      :host[has-name] #name-heading {
+        opacity: 1;
+      }
+      :host #name-heading {
+        opacity: 0.2;
+        min-height: 24px;
+        font-size: 24px;
+        padding: 0;
+      }
+      paper-button {
+        --paper-button-ink-color: #9bebff;
+        background-color: #eee;
+        border: 4px solid #ddd;
+        text-transform: none;
+      }
+      paper-dialog {
+        padding: 24px;
+      }
+      #photo {
+        border-radius: 0.5em;
+        border: 4px solid black;
+      }
+    </style>
+    <template is="dom-if" if="[[hasName]]">
+      <paper-button id="name">[[name]]</paper-button>
+    </template>
+    <paper-dialog id="mymodal">
+      <div id="name-heading">[[name]]</div>
+      <paper-dialog-scrollable>
+        <p hidden$="[[!hasName]]" aria-hidden$="[[!hasName]]">
+          <img id="photo" src="[[photo]]" alt="[[name]]" width="100px"/>
+        </p>
+        <p><iron-icon icon="communication:email"></iron-icon> [[email]]</p>
+        <p><iron-icon icon="communication:phone"></iron-icon> [[phone]]</p>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus>Accept</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'contact-card',
+
+      properties: {
+        /** 
+        * user's name
+        */
+        name: {
+          type: String,
+          value: null,
+        },
+        /** 
+        * Does the user have a name?
+        */
+        hasName: {
+          type: Boolean,
+          computed: '_computeHasName(name)',
+          reflectToAttribute: true,
+        },
+        /** 
+        * user's email
+        */
+        email: {
+          type: String,
+          value: 'demo@local.host',
+        },
+        /** 
+        * user's phone
+        */
+        phone: {
+          type: String,
+          value: '555-867-5309',
+        },
+        /** 
+        * user's photo
+        */
+        photo: {
+          type: String,
+          value: 'http://lorempixel.com/200/200/food',
+        },
+      },
+
+      ready: function() {
+        this.addEventListener('tap', function(e){
+          this.$.mymodal.open();
+        });
+      },
+      /** 
+      * Compute if we have a name
+      */
+      _computeHasName: function (name){
+        if (name == null) {
+          return false;
+        }
+        return true;
+      }
+    });
+  </script>
+</dom-module>

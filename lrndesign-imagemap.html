@@ -1,0 +1,206 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+
+<dom-module id="lrndesign-imagemap">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      ::slotted([hotspot]) {
+        display: none;
+      }
+      @media print {
+        ::slotted(#screen-only) {
+          display: none;
+        }
+        ::slotted([hotspot]) {
+          display: block;
+        }
+      }
+    </style>
+    <h1 hidden$="[[!label]]">[[label]]</h1>
+    <div hidden$="[[!description]]">[[description]]</div>
+    <slot id="screen-only"></slot>
+    <slot></slot>
+    <paper-dialog id="info" no-overlap horizontal-align="left" vertical-align="top">
+      <div id="label"></div>
+      <paper-dialog-scrollable>
+        <div id="desc"></div>
+      </paper-dialog-scrollable>
+    </paper-dialog>
+    <iron-ajax
+    auto
+    id="get_svg"
+    url="[[src]]"
+    handle-as="text"
+    on-response="_getSVGHandler"></iron-ajax>
+  </template>
+    <!--
+
+    
+  -->
+  </template>
+  <script>
+    /**
+     * `lrndesign-imagemap`
+     * creates an accessible image map
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    Polymer({
+
+      is: 'lrndesign-imagemap',
+
+      properties: {
+        /**
+         * Label for the imagemap
+         */
+         label: {
+          type: String,
+          value: null,
+        },
+        /**
+         * Description for the imagemap
+         */
+         description: {
+          type: String,
+          value: null,
+        },
+        /**
+         * The path of the SVG
+         */
+         src: {
+          type: String,
+          value: null,
+        },
+        /**
+         * The path of the SVG
+         */
+         hotspotDetails: {
+          type: Array,
+          value: [],
+        },
+      },
+
+      ready: function() {
+      },
+
+      /**
+       * Convert from csv text to an array in the table function
+       */
+      _getSVGHandler: function(e) {
+        var temp = document.createElement('div');
+        temp.innerHTML = e.detail.response;
+        var svg = temp.firstChild;
+        var svgid = this._getID(svg,'svg-'+Date.now());
+        var hotspots = this.querySelectorAll('[hotspot]');
+        var data = [];
+        this._setAriaLabelledBy(svg,svgid,this);
+        this._setHotspotClasses(svg,hotspots);
+        this.querySelector('#screen-only').appendChild(svg);  
+
+        for (var i=0; i<hotspots.length; i++){
+          var hotspot = hotspots[i].getAttribute('hotspot');
+          var id = this._getID(hotspots[i],hotspot+'-print');
+          this._configHotspot(svg,hotspot,hotspots[i]);
+          this._activateHotspot(svg.querySelector('#'+hotspot),hotspot);
+        }
+      },
+
+      /**
+       * Sets the aria labels for SVG based on a parent element.
+       */
+       _setAriaLabelledBy: function(svg,prefix,el) {
+        var el = el !== null ? el : this;
+        svg.setAttribute('aria-labelledby',this._setSVG(svg,el,'desc',prefix)+' '+this._setSVG(svg,el,'title',prefix));
+      },
+
+      /**
+       * Set SVG title & description based on an element.
+       */
+       _setSVG: function(svg,element,nodename,prefix) {
+        var attr = nodename == 'title' ? 'label' : nodename;
+        var node = this._getOrCreateElement(svg,nodename);
+        var query = element.querySelector('#'+attr);
+        if(element.getAttribute(attr) !== null) {
+          node.innerHTML = element.getAttribute(attr);
+        } else if (query !== null && query.innerHTML !== ''){
+          node.innerHTML = query.innerHTML;
+        }
+        return this._getID(node,prefix+'-'+attr);
+      },
+
+      /**
+       * Adds or changes .
+       */
+       _getOrCreateElement: function(parent,element) {
+        var node = parent.querySelector(element);
+        if (node == null){
+          node = document.createElement(element);
+          parent.prepend(node);
+        }
+        return node;
+      },
+      
+      /**
+       * Sets hotspot as button.
+       */
+      _activateHotspot: function(node,hotspot) {
+        var map = this;
+        node.setAttribute('aria-controls','info');
+        node.setAttribute('role','button');
+        node.setAttribute('tabindex',0);
+        node.addEventListener('click',function(e){
+          map._setInfo(this,hotspot,'label');
+          map._setInfo(this,hotspot,'desc',true);
+        });
+      },
+      
+      /**
+       * Sets hotspot as button.
+       */
+      _setInfo: function(node,hotspot,type,open) {
+        var open = open !== null ? open : false;
+        var details = this.querySelector('#'+hotspot+'-print');
+        this.$.info.querySelector('#'+type).innerHTML = details.querySelector('#'+type).innerHTML;
+        this.$.info.open();
+      },
+      
+      /**
+       * Configures print version and provides details data for each hotspot.
+       */
+      _configHotspot: function(svg,hotspot,el) {
+        var clone = svg.cloneNode(true);
+        el.appendChild(clone);
+        el.querySelector('#'+hotspot).classList.add('selected');
+        this._setAriaLabelledBy(clone,hotspot,el);
+      },
+      
+      /**
+       * Gets an element's ID if set. 
+       * If not set, sets it to an alternative.
+       */
+       _setHotspotClasses: function(svg,hotspots) {
+        for (var i=0; i<hotspots.length; i++){
+          var hotspot = hotspots[i].getAttribute('hotspot');
+          svg.querySelector('#'+hotspot).classList.add('hotspot');
+        }
+      },
+
+      /**
+       * Gets an element's ID if set. 
+       * If not set, sets it to an alternative.
+       */
+      _getID: function(element,alternateID) {
+        if(element.getAttribute('id') === null) {
+          element.setAttribute('id',alternateID);
+        }
+        return element.getAttribute('id');
+      },
+    });
+  </script>
+</dom-module>
