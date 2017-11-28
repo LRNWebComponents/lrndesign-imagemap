@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 
 <dom-module id="lrndesign-imagemap">
@@ -7,6 +8,25 @@
     <style>
       :host {
         display: block;
+      }
+      :host paper-dialog {
+        border: 1px solid #000;
+        border-radius: 0.25em;
+      }
+      :host paper-dialog > #title, 
+      :host paper-dialog > #desc {
+        padding: 15px;
+        margin: 0;
+      }
+      :host paper-dialog > #title {
+        position: absolute;
+        left: -9999px;
+        overflow: hidden;
+        height: 0;
+        width: 0;
+      }
+      :host paper-dialog > #title > * {
+        margin: 0;
       }
       ::slotted([hotspot]) {
         display: none;
@@ -24,11 +44,9 @@
     <div hidden$="[[!description]]">[[description]]</div>
     <slot id="screen-only"></slot>
     <slot></slot>
-    <paper-dialog id="info" no-overlap horizontal-align="left" vertical-align="top">
-      <div id="label"></div>
-      <paper-dialog-scrollable>
-        <div id="desc"></div>
-      </paper-dialog-scrollable>
+    <paper-dialog id="info">
+      <div id="title"></div>
+      <div id="desc"></div>
     </paper-dialog>
     <iron-ajax
     auto
@@ -151,23 +169,48 @@
        */
       _activateHotspot: function(node,hotspot) {
         var map = this;
+        //var keys = document.createElement('iron-a11y-keys');
         node.setAttribute('aria-controls','info');
         node.setAttribute('role','button');
         node.setAttribute('tabindex',0);
+        node.setAttribute('aria-label',this.querySelector('#'+hotspot+'-print').querySelector('#label').innerHTML);
+        /*keys.setAttribute('keys','enter');
+        keys.setAttribute('target',hotspot);
+        keys.setAttribute('on-keys-pressed','this._setInfo("'+hotspot+'")');
+        map.querySelector('#screen-only').appendChild(keys);*/
         node.addEventListener('click',function(e){
-          map._setInfo(this,hotspot,'label');
-          map._setInfo(this,hotspot,'desc',true);
+          map._setInfo(hotspot);
+        });
+        node.addEventListener('keyup',function(e){
+          if (e.keyCode == 13) {
+            map._setInfo(hotspot);
+          }
         });
       },
       
       /**
        * Sets hotspot as button.
        */
-      _setInfo: function(node,hotspot,type,open) {
-        var open = open !== null ? open : false;
+      _setInfo: function(hotspot) {
         var details = this.querySelector('#'+hotspot+'-print');
-        this.$.info.querySelector('#'+type).innerHTML = details.querySelector('#'+type).innerHTML;
+        var node = this.querySelector('#'+hotspot);
+        this.$.info.querySelector('#title').innerHTML = '';
+        this.$.info.querySelector('#title').appendChild(details.querySelector('#label').cloneNode(true));
+        this.$.info.querySelector('#desc').innerHTML = details.querySelector('#desc').innerHTML;
+        //this.$.info.positionTarget = node;
         this.$.info.open();
+        this._resetHotspots();
+        node.classList.add('selected');
+      },
+      
+      /**
+       * Resets all hotspots.
+       */
+      _resetHotspots: function() {
+        var hotspots = this.querySelectorAll('.hotspot[role="button"]');
+        for (var i=0; i<hotspots.length; i++){
+          hotspots[i].classList.remove('selected');
+        }
       },
       
       /**
