@@ -38,15 +38,18 @@
       }
       /*::slotted([hotspot]) {
         display: none;
-      }
+      }*/
       @media print {
-        ::slotted(#screen-only) {
+        :host > #svg {
+          display: none;
+        }
+        /*::slotted(#screen-only) {
           display: none;
         }
         ::slotted([hotspot]) {
           display: block;
-        }
-      }*/
+        }*/
+      }
     </style>
     <relative-heading 
       hidden$="[[!label]]"
