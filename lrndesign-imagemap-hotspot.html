@@ -1,0 +1,63 @@
+<link rel="import" href="../polymer/polymer.html">
+<!--link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html"-->
+<link rel="import" href="../relative-heading/relative-heading.html">
+
+<dom-module id="lrndesign-imagemap-hotspot">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+      @media print {
+        :host {
+          display: block;
+        }
+      }
+    </style>
+    <relative-heading 
+      hidden$="[[!label]]"
+      id="heading"
+      text$="[[label]]">
+    </relative-heading>
+    <div id="desc"><slot></slot></div>
+  </template>
+  <script>
+    /**
+     * `lrndesign-imagemap-hotspot`
+     * creates an accessible image map
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    Polymer({
+
+      is: 'lrndesign-imagemap-hotspot',
+
+      properties: {
+        /**
+         * Label for the hotspot
+         */
+         label: {
+          type: String,
+          value: null,
+        },
+        /**
+         * Id of hotspot element inside the SVG
+         */
+         hotspotId: {
+          type: String,
+          value: null,
+        },
+      },
+      attached: function(){
+        let root = this;
+      },
+      setParentHeading: function(parent){
+        this.$.heading._setParent(parent);
+      }
+    });
+  </script>
+</dom-module>

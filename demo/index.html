@@ -14,20 +14,45 @@
 
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
-        .hotspot > * {
+        #demo1 .hotspot > * {
           fill: rgba(0,0,0,0.5);
         }
-        .hotspot:active,
-        .hotspot:focus,
-        .hotspot:hover {
+        #demo1 .hotspot:active,
+        #demo1 .hotspot:focus,
+        #demo1 .hotspot:hover {
           outline: none;
         }
-        .hotspot:active > *,
-        .hotspot:focus > *,
-        .hotspot:hover > *,
-        .hotspot.selected > * {
+        #demo1 .hotspot:active > *,
+        #demo1 .hotspot:focus > *,
+        #demo1 .hotspot:hover > *,
+        #demo1 .hotspot.selected > * {
           fill:transparent;
           cursor: pointer;
+        }
+        #demo2 .hotspot > * {
+          opacity: 0.8;
+        }
+        #demo2 .hotspot:active > *,
+        #demo2 .hotspot:focus > *,
+        #demo2 .hotspot:hover > *,
+        #demo2 .hotspot.selected > *,
+        #demo2 .hotspot text,
+        #demo2 .hotspot text > * {
+          opacity: 1;
+          cursor: pointer;
+        }
+        @media print {
+          #demo2 .hotspot:not(.selected) * {
+            opacity: 1;
+            fill: #ddd;
+          }
+          #demo2 .hotspot:not(.selected) text,
+          #demo2 .hotspot:not(.selected) text > * {
+            fill: black;
+          }
+          :host .screen-only {
+            display: none;
+          }
         }
       </style>
     </custom-style>
@@ -37,24 +62,63 @@
       <h3>Basic lrndesign-imagemap demo</h3>
       <demo-snippet>
         <template>
-          <lrndesign-imagemap src="images/fastfood.svg">
-            <h1 id="label">Junk Food Calories</h1>
-            <div id="desc">
-              A fast food meal with a double cheeseburger, large fries, and a 12-ounce cola.
+          <lrndesign-imagemap id="demo1" src="images/fastfood.svg" label="Junk Food Calories">
+            <div slot="desc">
+              <p>A fast food meal with a double cheeseburger, large fries, and a 12-ounce cola.
+                <span class="screen-only">Click on the hotspots to learn more.</span>
+              </p>
             </div>
-            <div id="screen-only">Click on the hotspots to learn more.</div>
-            <div hotspot="burger">
-              <h2 id="label">Double Cheeseburger</h2>
-              <div id="desc">The double cheeseburger is 459 calories.</div>
+            <lrndesign-imagemap-hotspot hotspot-id="burger" label="Double Cheeseburger">
+              The double cheeseburger is 459 calories.
+            </lrndesign-imagemap-hotspot>
+            <lrndesign-imagemap-hotspot hotspot-id="fries" label="Large French Fries">
+              The large order of french fries is 480 calories.
+            </lrndesign-imagemap-hotspot>
+            <lrndesign-imagemap-hotspot hotspot-id="cola" label="12-Ounce Cola">
+              The 12-ounce is 138 calories.
+            </lrndesign-imagemap-hotspot>
+          </lrndesign-imagemap>
+        </template>
+      </demo-snippet>
+
+      <h3>Basic lrndesign-imagemap demo aith svg</h3>
+      <demo-snippet>
+        <template>
+          <lrndesign-imagemap id="demo2" src="images/designprocess.svg" label="Course Design Process">
+            <div slot="desc">
+              <p>
+                A diagram of the 5-step course design process.
+                <span class="screen-only">Click on the hotspots to learn more.</span>
+              </p>
             </div>
-            <div hotspot="fries">
-              <h2 id="label">Large French Fries</h2>
-              <div id="desc">The large order of french fries is 480 calories.</div>
-            </div>
-            <div hotspot="cola">
-              <h2 id="label">12-Ounce Cola</h2>
-              <div id="desc">The 12-ounce is 138 calories.</div>
-            </div>
+            <lrndesign-imagemap-hotspot hotspot-id="plan" label="Design Plan">
+              During the <strong>Design Plan</strong>, collaborators work 
+              together to identify the Course Goals and an Assessment 
+              Strategy. The project plan is laid out, the timeline is 
+              confirmed, and any other specific requirements for the course 
+              are identified. 
+            </lrndesign-imagemap-hotspot>
+            <lrndesign-imagemap-hotspot hotspot-id="outline" label="Course Outline">
+              Then the <strong>Course Outline</strong> is created, fleshing 
+              out the topics, sub-topics, lesson objectives, instructional 
+              sequence, weekly activities and the relevant content and 
+              media types.
+            </lrndesign-imagemap-hotspot>
+            <lrndesign-imagemap-hotspot hotspot-id="proto" label="Course Outline">
+              Next, the <strong>Prototyp</strong> phase, a singular lesson 
+              template is created which includes content, assessments, and 
+              represents the overall the layout design.
+            </lrndesign-imagemap-hotspot>
+            <lrndesign-imagemap-hotspot hotspot-id="prod" label="Production">
+              During <strong>Production</strong>, content is developed and 
+              assessments are created in eLearning Management System (ELMS) 
+              and Canvas.
+            </lrndesign-imagemap-hotspot>
+            <lrndesign-imagemap-hotspot hotspot-id="qr" label="Quality Review">
+              Finally, during the <strong>Quality Review</strong> phase, the 
+              course is checked for quality standards, adherence to Penn 
+              State copyright requirements and compliance with ADA criterions.
+            </lrndesign-imagemap-hotspot>
           </lrndesign-imagemap>
         </template>
       </demo-snippet>
