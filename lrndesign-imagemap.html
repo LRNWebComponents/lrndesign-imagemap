@@ -159,7 +159,7 @@
         };
         //set up main svg and append to document
         temp.innerHTML = e.detail.response;
-        let svg = temp.firstChild, svgid = getID(svg,'svg-'+Date.now()), hdata = Polymer.dom(root).querySelectorAll('lrndesign-imagemap-hotspot');
+        let svg = temp.querySelector('svg'), svgid = getID(svg,'svg-'+Date.now()), hdata = Polymer.dom(root).querySelectorAll('lrndesign-imagemap-hotspot');
         setAriaLabelledBy(root,svg,svgid);
         this.$.svg.appendChild(svg); 
 
