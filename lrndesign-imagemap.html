@@ -61,7 +61,7 @@
     <div id="desc"><slot name="desc"></slot></div>
     <div id="svg"></div>
     <slot></slot>
-    <paper-dialog id="info">
+    <paper-dialog id="hdetails">
       <div id="title"></div>
       <div id="desc"></div>
     </paper-dialog>
@@ -126,26 +126,24 @@
       },
 
       /**
-       * when ready, set an event for when the info dialog is mouseout or blur
+       * when ready, set an event for when the hdetails dialog is mouseout or blur
        */
        ready: function(){
         let root = this;
-        this.$.info.addEventListener('blur',function(){
+        this.$.hdetails.addEventListener('blur',function(){
           root.closeHotspot();
         });
-        this.$.info.addEventListener('mouseout',function(){
+        this.$.hdetails.addEventListener('mouseout',function(){
           root.closeHotspot();
         });
-        window.addEventListener('keydown',function(e){
-          if(e.keyCode === 32){
-            e.stopPropagation();
-            e.preventDefault();
-          }
-          return false;
-        });
-        this.$.info.addEventListener('keyup',function(e){
+        this.$.hdetails.addEventListener('keyup',function(e){
           if (e.keyCode === 13 || e.keyCode === 32) {
             root.closeHotspot();
+          }
+        });
+        window.addEventListener('keypress',function(e){
+          if (e.target.getAttribute('aria-controls') === 'hdetails' || e.target.getAttribute('id') == 'hdetails'){
+            e.preventDefault();
           }
         });
        },
@@ -201,7 +199,7 @@
           }
 
           //configure hotspot on main (interactive) svg
-          hotspot.setAttribute('aria-controls','info');
+          hotspot.setAttribute('aria-controls','hdetails');
           hotspot.setAttribute('role','button');
           hotspot.setAttribute('tabindex',0);
           hotspot.setAttribute('aria-label',hdata[i].hotspotLabel);
@@ -210,22 +208,24 @@
             root.openHotspot(hotspot,hdata[i]);
           });
           hotspot.addEventListener('keyup',function(e){
-            if (!hotspot.classList.contains('selected') && (e.keyCode === 13 || e.keyCode === 32)){
-              root.openHotspot(hotspot,hdata[i]);
+            if (e.keyCode === 13 || e.keyCode === 32){
+              if (!hotspot.classList.contains('selected')){
+                root.openHotspot(hotspot,hdata[i]);
+              }
             }
           });
         }
       },
       
       /**
-       * Selects a hotspot and opens info dialog with details about it.
+       * Selects a hotspot and opens hdetails dialog with details about it.
        */
       openHotspot: function(hotspot,details) {
-        this.$.info.querySelector('#title').innerHTML = details.label;
-        this.$.info.querySelector('#desc').innerHTML = details.querySelector('#desc').innerHTML;
-        this.$.info.positionTarget = hotspot;
+        this.$.hdetails.querySelector('#title').innerHTML = details.label;
+        this.$.hdetails.querySelector('#desc').innerHTML = details.querySelector('#desc').innerHTML;
+        this.$.hdetails.positionTarget = hotspot;
         this.__activeHotspot = hotspot;
-        this.$.info.open();
+        this.$.hdetails.open();
         this.resetHotspots();
         hotspot.classList.add('selected');
       },
@@ -234,14 +234,14 @@
        * Closes a hotspot.
        */
       closeHotspot: function() {
-        this.$.info.querySelector('#title').innerHTML = '';
-        this.$.info.querySelector('#desc').innerHTML = '';
+        this.$.hdetails.querySelector('#title').innerHTML = '';
+        this.$.hdetails.querySelector('#desc').innerHTML = '';
         this.resetHotspots();
-        this.$.info.close();
+        this.$.hdetails.close();
       },
       
       /**
-       * Closes info dialog and deselects all hotspots.
+       * Closes hdetails dialog and deselects all hotspots.
        */
       resetHotspots: function() {
         let hotspots = this.querySelectorAll('.hotspot[role="button"]');
