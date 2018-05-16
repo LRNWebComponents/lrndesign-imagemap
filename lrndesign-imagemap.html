@@ -161,10 +161,10 @@
           let svgElem = function(nodename){
             source = source !== null ? source : root;
             //adds title or desc element to target
-            let attr = nodename == 'title' ? 'label' : nodename, query = source.querySelector('#'+attr);
+            let attr = nodename === 'title' ? 'label' : nodename, query = source.querySelector('#'+attr);
             var label = target.querySelector(nodename);
             //if the target doesn't have the element, add it
-            if (label == null){
+            if (label === null){
               label = document.createElement(nodename);
               target.prepend(label);
             }
@@ -178,7 +178,7 @@
             return getID(label,prefix+'-'+attr);
           };
           //set aria-labelledby to the id's for title and descriptions
-          target.setAttribute('aria-labelledby',svgElem('desc')+' '+svgElem('title'));
+          target.setAttribute('aria-labelledby',svgElem('desc')+' '+svgElem('label'));
         };
         //set up main svg and append to document
         temp.innerHTML = e.detail.response;
@@ -202,7 +202,7 @@
           hotspot.setAttribute('aria-controls','hdetails');
           hotspot.setAttribute('role','button');
           hotspot.setAttribute('tabindex',0);
-          hotspot.setAttribute('aria-label',hdata[i].hotspotLabel);
+          hotspot.setAttribute('aria-label',hdata[i].label);
           hotspot.classList.add('hotspot');
           hotspot.addEventListener('click',function(e){
             root.openHotspot(hotspot,hdata[i]);
@@ -221,7 +221,7 @@
        * Selects a hotspot and opens hdetails dialog with details about it.
        */
       openHotspot: function(hotspot,details) {
-        this.$.hdetails.querySelector('#title').innerHTML = details.label;
+        this.$.hdetails.querySelector('#title').innerHTML = details.getAttribute('label');
         this.$.hdetails.querySelector('#desc').innerHTML = details.querySelector('#desc').innerHTML;
         this.$.hdetails.positionTarget = hotspot;
         this.__activeHotspot = hotspot;
@@ -238,6 +238,7 @@
         this.$.hdetails.querySelector('#desc').innerHTML = '';
         this.resetHotspots();
         this.$.hdetails.close();
+        this.__activeHotspot.focus();
       },
       
       /**
