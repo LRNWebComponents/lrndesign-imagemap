@@ -126,7 +126,32 @@
       },
 
       /**
-       * Convert from csv text to an array in the table function
+       * when ready, set an event for when the info dialog is mouseout or blur
+       */
+       ready: function(){
+        let root = this;
+        this.$.info.addEventListener('blur',function(){
+          root.closeHotspot();
+        });
+        this.$.info.addEventListener('mouseout',function(){
+          root.closeHotspot();
+        });
+        window.addEventListener('keydown',function(e){
+          if(e.keyCode === 32){
+            e.stopPropagation();
+            e.preventDefault();
+          }
+          return false;
+        });
+        this.$.info.addEventListener('keyup',function(e){
+          if (e.keyCode === 13 || e.keyCode === 32) {
+            root.closeHotspot();
+          }
+        });
+       },
+
+      /**
+       * Convert from svg text to an array in the table function
        */
       _getSVGHandler: function(e) {
         let root = this, temp = document.createElement('div'), getID = function(element,alt){
@@ -185,7 +210,7 @@
             root.openHotspot(hotspot,hdata[i]);
           });
           hotspot.addEventListener('keyup',function(e){
-            if (e.keyCode == 13) {
+            if (!hotspot.classList.contains('selected') && (e.keyCode === 13 || e.keyCode === 32)){
               root.openHotspot(hotspot,hdata[i]);
             }
           });
@@ -199,9 +224,20 @@
         this.$.info.querySelector('#title').innerHTML = details.label;
         this.$.info.querySelector('#desc').innerHTML = details.querySelector('#desc').innerHTML;
         this.$.info.positionTarget = hotspot;
+        this.__activeHotspot = hotspot;
         this.$.info.open();
         this.resetHotspots();
         hotspot.classList.add('selected');
+      },
+      
+      /**
+       * Closes a hotspot.
+       */
+      closeHotspot: function() {
+        this.$.info.querySelector('#title').innerHTML = '';
+        this.$.info.querySelector('#desc').innerHTML = '';
+        this.resetHotspots();
+        this.$.info.close();
       },
       
       /**
