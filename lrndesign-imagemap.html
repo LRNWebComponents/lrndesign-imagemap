@@ -11,11 +11,23 @@
       :host {
         display: block;
       }
-      .hotspot > * {
-        fill: rgba(0,0,0,0.5);
+      :host #buttons {
+        position: absolute;
+        left: -999999px;
+        top: 0;
+        overflow: hidden;
+        opacity: 0;
       }
-      svg  .hotspot > * {
-        fill: rgba(0,0,0,0.5);
+      .hotspot > *:not(text) {
+        @apply --lrndesign-imagemap-hotspot;
+      }
+      .hotspot.selected > *:not(text) {
+        @apply --lrndesign-imagemap-hotspot-selected;
+      }
+      .hotspot.focus > *:not(text),
+      .hotspot:hover > *:not(text), {
+        cursor: pointer;
+        @apply --lrndesign-imagemap-hotspot-focus;
       }
       :host paper-dialog {
         border: 1px solid #000;
@@ -60,6 +72,7 @@
     </relative-heading>
     <div id="desc"><slot name="desc"></slot></div>
     <div id="svg"></div>
+    <div id="buttons"></div>
     <slot></slot>
     <paper-dialog id="hdetails">
       <div id="title"></div>
@@ -141,11 +154,11 @@
             root.closeHotspot();
           }
         });
-        window.addEventListener('keypress',function(e){
+        /*window.addEventListener('keypress',function(e){
           if (e.target.getAttribute('aria-controls') === 'hdetails' || e.target.getAttribute('id') == 'hdetails'){
             e.preventDefault();
           }
-        });
+        });*/
        },
 
       /**
@@ -199,15 +212,23 @@
           }
 
           //configure hotspot on main (interactive) svg
-          hotspot.setAttribute('aria-controls','hdetails');
-          hotspot.setAttribute('role','button');
-          hotspot.setAttribute('tabindex',0);
-          hotspot.setAttribute('aria-label',hdata[i].label);
+          let hbutton = document.createElement('button');
+          hbutton.setAttribute('aria-controls','hdetails');
+          hbutton.setAttribute('tabindex',0);
+          hbutton.setAttribute('aria-label',hdata[i].label);
+          root.$.buttons.appendChild(hbutton);
+          hbutton.addEventListener('focus',function(){
+            console.log('focus',i,hotspot);
+            hotspot.classList.add('focus');
+          });
+          hbutton.addEventListener('blur',function(){
+            hotspot.classList.remove('focus');
+          });
           hotspot.classList.add('hotspot');
           hotspot.addEventListener('click',function(e){
             root.openHotspot(hotspot,hdata[i]);
           });
-          hotspot.addEventListener('keyup',function(e){
+          hbutton.addEventListener('keyup',function(e){
             if (e.keyCode === 13 || e.keyCode === 32){
               if (!hotspot.classList.contains('selected')){
                 root.openHotspot(hotspot,hdata[i]);
@@ -221,6 +242,7 @@
        * Selects a hotspot and opens hdetails dialog with details about it.
        */
       openHotspot: function(hotspot,details) {
+        let root = this, node = Polymer.dom(root).querySelector('lrndesign-imagemap-hotspot[hotspot-id="'+hotspot.getAttribute('id')+'"]');
         this.$.hdetails.querySelector('#title').innerHTML = details.getAttribute('label');
         this.$.hdetails.querySelector('#desc').innerHTML = details.querySelector('#desc').innerHTML;
         this.$.hdetails.positionTarget = hotspot;
